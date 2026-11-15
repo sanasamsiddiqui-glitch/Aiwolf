@@ -19,33 +19,48 @@ button{width:100%;padding:12px;border-radius:20px;border:none;background:#2563eb
 <header>AI Wolf</header>
 <div id="chat"><div class="a">AI Wolf Overview:
 
-Namaste! Main AI Wolf hoon. Apna prashn puchein.</div></div>
+Namaste! Main AI Wolf hoon. Mujhse Bharat, Cricket, Lucknow, Vigyan, Tarikh/Samay ya Ganit (Math) ka koi bhi prashn puchein!</div></div>
 <div class="bar">
-<input id="q" placeholder="Ask AI Wolf..." onkeydown="if(event.keyCode===13)go()">
+<input id="q" placeholder="Ask AI Wolf anything..." onkeydown="if(event.keyCode===13)go()">
 <button onclick="go()">Ask AI Wolf</button>
 </div>
 <script>
+var DB=[
+{k:["cricket","centuri","century","satak","sachin","tendulkar","virat","kohli"],v:"Cricket Record:\nAntarrashtriya cricket mein sabse zyada 100 shatak (centuries) Sachin Tendulkar ke naam hain. Virat Kohli dusre sthan par hain."},
+{k:["pm","pradhanmantri","prime minister","modi","narendra"],v:"Bharat ke Pradhanmantri:\nShri Narendra Modi Bharat ke vartaman Pradhanmantri hain."},
+{k:["rashtrapati","president","murmu","droupadi"],v:"Bharat ki Rashtrapati:\nSmt. Droupadi Murmu Bharat ki Rashtrapati hain."},
+{k:["cm","mukhyamantri","yogi","adityanath","uttar pradesh","up"],v:"Uttar Pradesh (UP):\nUttar Pradesh ki rajdhani Lucknow hai aur iske Mukhyamantri Shri Yogi Adityanath hain."},
+{k:["lucknow","nawab","tapman","mausam","thandi","weather"],v:"Lucknow Jankari:\nLucknow Uttar Pradesh ki rajdhani hai, jise 'Nawabo ka Shahar' kaha jata hai. November mahine mein yahan ka ausat tapman 15 se 26 degree Celsius ke beech rehta hai."},
+{k:["rajdhani","capital","delhi","new delhi"],v:"Bharat ki Rajdhani:\nNayi Delhi (New Delhi) Bharat ki rashtriya rajdhani hai."},
+{k:["bharat","india","desh","population","abadi"],v:"Bharat (India):\nBharat duniya ka sabse bada loktantra aur sabse adhik abadi wala desh hai. Yahan 28 rajya aur 8 kendra shasit pradesh hain."},
+{k:["amir","richest","elon","musk"],v:"Duniya ke Sabse Amir Vyakti:\nElon Musk (Tesla aur SpaceX ke malik) duniya ke sabse amir vyaktiyon mein shirsh par hain."},
+{k:["ai","artificial intelligence","wolf","tum kaun","kaun ho","kya kar"],v:"AI Wolf Parichay:\nMain AI Wolf hoon, ek smart digital assistant. Main samanya gyan, cricket, bharat, vigyan, tarikh-samay aur ganit ke sawalon ka turant jawab de sakta hoon."},
+{k:["surya","sun","chand","moon","prithvi","earth","grah","planet"],v:"Saurmandal (Solar System):\nHamare saurmandal mein 8 grah hain. Surya ek tara hai aur Prithvi teesra grah hai jahan jeevan sambhav hai."},
+{k:["computer","internet","mobile","phone"],v:"Technology:\nComputer ka avishkar Charles Babbage ne kiya tha. Aaj smartphone aur internet duniya ko jodne ka sabse bada madhyam hain."}
+];
 function go(){
 var q=document.getElementById("q"),c=document.getElementById("chat"),t=q.value.trim();
 if(!t)return;
 var u=document.createElement("div");u.className="u";u.innerText=t;c.appendChild(u);q.value="";
-var a=document.createElement("div");a.className="a";a.innerText="AI Wolf jawab khoj raha hai...";c.appendChild(a);c.scrollTop=c.scrollHeight;
-var cb="aw_"+Date.now();
-window[cb]=function(d){
-var pages=d&&d.query&&d.query.pages?d.query.pages:{};
-var keys=Object.keys(pages);
-var out=[];
-for(var i=0;i<keys.length;i++){
-var p=pages[keys[i]];
-if(p&&p.extract)out.push(p.title+":\n"+p.extract);
+var low=t.toLowerCase(),ans="";
+if(/^[0-9+\-*/().\s]+$/.test(t)&&/[+\-*/]/.test(t)){
+try{ans="Ganit (Math) Uttar:\n"+t+" = "+Function("return ("+t+")")();}catch(e){}
 }
-a.innerText=out.length>0?"AI Wolf Overview:\n\n"+out.join("\n\n"):"AI Wolf: Koi jankari nahi mili. Kripya mukhya naam (jaise: India, Lucknow, Sachin Tendulkar) likhein.";
-c.scrollTop=c.scrollHeight;
-delete window[cb];
-};
-var s=document.createElement("script");
-s.src="https://wikipedia.org"+encodeURIComponent(t)+"&gsrlimit=2&prop=extracts&exintro=1&explaintext=1&format=json&callback="+cb;
-document.body.appendChild(s);
+if(!ans&&(low.indexOf("time")!==-1||low.indexOf("samay")!==-1||low.indexOf("baje")!==-1||low.indexOf("date")!==-1||low.indexOf("tarikh")!==-1||(low.indexOf("aaj")!==-1&&low.indexOf("din")!==-1))){
+ans="Vartaman Tarikh aur Samay:\n"+new Date().toLocaleString("en-IN");
+}
+if(!ans){
+for(var i=0;i<DB.length;i++){
+for(var j=0;j<DB[i].k.length;j++){
+if(low.indexOf(DB[i].k[j])!==-1){ans=DB[i].v;break;}
+}
+if(ans)break;
+}
+}
+if(!ans){
+ans="AI Wolf Overview:\nAapne pucha: \""+t+"\"\n\nMain Bharat, Cricket, Uttar Pradesh, Lucknow, Vigyan, Tarikh/Samay aur Ganit (jaise: 45*12) ke prashno ka turant uttar deta hoon.";
+}
+var a=document.createElement("div");a.className="a";a.innerText=ans;c.appendChild(a);c.scrollTop=c.scrollHeight;
 }
 </script>
 </body>

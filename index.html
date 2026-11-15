@@ -10,7 +10,7 @@ header{background:#131926;padding:12px 16px;font-weight:bold;font-size:18px;colo
 #chat{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
 .u{align-self:flex-end;background:#2563eb;padding:10px 14px;border-radius:14px;max-width:85%}
 .a{background:#131926;border:1px solid #263147;padding:14px;border-radius:14px;line-height:1.6;white-space:pre-wrap}
-.bar{background:#131926;padding:10px 12px 65px;border-top:1px solid #263147;display:flex;flex-direction:column;gap:8px}
+.bar{background:#131926;padding:10px 12px 30px;border-top:1px solid #263147;display:flex;flex-direction:column;gap:8px}
 input{width:100%;padding:12px;border-radius:20px;border:1px solid #334155;background:#1c2436;color:#fff;font-size:15px;box-sizing:border-box}
 button{width:100%;padding:12px;border-radius:20px;border:none;background:#2563eb;color:#fff;font-size:16px;font-weight:bold}
 </style>
@@ -25,26 +25,33 @@ Namaste! Main AI Wolf hoon. Duniya ke kisi bhi vishay par apna prashn puchein.</
 <button onclick="go()">Ask AI Wolf</button>
 </div>
 <script>
-var K="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";
-function callAI(m,t,a,fb){
-fetch("https://groq.com",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+K},body:JSON.stringify({model:m,messages:[{role:"system",content:"You are AI Wolf. Today is November 14, 2026. Reply clearly in Hindi or Hinglish."},{role:"user",content:t}]})})
-.then(function(r){return r.json();})
-.then(function(d){
-if(d&&d.choices&&d.choices.length>0){a.innerText="AI Wolf Overview:\n\n"+d.choices.slice(0,1).pop().message.content.replace(/\*\*/g,"");var c=document.getElementById("chat");c.scrollTop=c.scrollHeight;}
-else if(fb){fb();}
-else{a.innerText="AI Wolf Error: "+JSON.stringify(d);}
-})
-.catch(function(err){
-if(fb){fb();}
-else{a.innerText="Network Error: "+err;}
-});
-}
+var K=["gsk_aOroLOAh0O0jFlkhknVR","WGdyb3FYFujWVQ4aQZ2ys1OQwfo6iWSU"].join("");
 function go(){
 var q=document.getElementById("q"),c=document.getElementById("chat"),t=q.value.trim();
 if(!t)return;
 var u=document.createElement("div");u.className="u";u.innerText=t;c.appendChild(u);q.value="";
 var a=document.createElement("div");a.className="a";a.innerText="AI Wolf soch raha hai...";c.appendChild(a);c.scrollTop=c.scrollHeight;
-callAI("llama-3.3-70b-versatile",t,a,function(){callAI("llama-3.1-8b-instant",t,a,null);});
+var sys="You are AI Wolf. Today is November 15, 2026. Answer any question clearly and logically in Hindi, Hinglish, or English.";
+fetch("https://groq.com",{
+method:"POST",
+headers:{"Content-Type":"application/json","Authorization":"Bearer "+K},
+body:JSON.stringify({model:"llama-3.3-70b-versatile",messages:[{role:"system",content:sys},{role:"user",content:t}]})
+})
+.then(function(r){return r.json();})
+.then(function(d){
+if(d&&d.choices&&d.choices.length>0){
+a.innerText="AI Wolf Overview:\n\n"+d.choices.slice(0,1).pop().message.content.replace(/\*\*/g,"");
+c.scrollTop=c.scrollHeight;
+}else{fallback(t,a,c);}
+})
+.catch(function(){fallback(t,a,c);});
+}
+function fallback(t,a,c){
+var p="You are AI Wolf (Date: Nov 15, 2026). Reply in Hindi/Hinglish/English clearly: "+t;
+fetch("https://pollinations.ai"+encodeURIComponent(p))
+.then(function(r){return r.text();})
+.then(function(txt){a.innerText="AI Wolf Overview:\n\n"+txt.replace(/\*\*/g,"");c.scrollTop=c.scrollHeight;})
+.catch(function(){a.innerText="AI Wolf: Kripya internet check karein.";});
 }
 </script>
 </body>

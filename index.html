@@ -19,39 +19,65 @@ button{width:100%;padding:12px;border-radius:20px;border:none;background:#2563eb
 <header>AI Wolf</header>
 <div id="chat"><div class="a">AI Wolf Overview:
 
-Namaste! Main AI Wolf hoon. Duniya ke kisi bhi vishay par apna prashn puchein.</div></div>
+Namaste! Main AI Wolf hoon. Kisi bhi vishay, vyakti, desh ya Lucknow ke mausam ke baare mein puchein.</div></div>
 <div class="bar">
-<input id="q" placeholder="Ask AI Wolf anything..." onkeydown="if(event.keyCode===13)go()">
+<input id="q" placeholder="Ask AI Wolf..." onkeydown="if(event.keyCode===13)go()">
 <button onclick="go()">Ask AI Wolf</button>
 </div>
 <script>
-var K=["gsk_aOroLOAh0O0jFlkhknVR","WGdyb3FYFujWVQ4aQZ2ys1OQwfo6iWSU"].join("");
+function cleanQ(t){
+var s=" "+t.toLowerCase().replace(/[?!.,]/g," ")+" ";
+s=s.replace(/ bharat | hindustan /g," India ")
+.replace(/ pradhanmantri | pm /g," Prime Minister ")
+.replace(/ rashtrapati /g," President ")
+.replace(/ mukhyamantri | cm /g," Chief Minister ")
+.replace(/ rajdhani /g," capital ")
+.replace(/ rajniti /g," politics ")
+.replace(/ centuri | century | centuries | satak /g," international cricket centuries ")
+.replace(/ sabse jyada | sabse zyada /g," most ")
+.replace(/ sabse amir /g," richest person ")
+.replace(/ duniya /g," world ")
+.replace(/ aaj | abhi | mein | me | ka | ki | ke | ko | se | par | hai | hain | kya | kiski | kiska | kaun | kon | naam | bataiye | batao | kaise | baare | kitni | kitna /g," ");
+return s.replace(/\s+/g," ").trim()||t;
+}
 function go(){
 var q=document.getElementById("q"),c=document.getElementById("chat"),t=q.value.trim();
 if(!t)return;
 var u=document.createElement("div");u.className="u";u.innerText=t;c.appendChild(u);q.value="";
-var a=document.createElement("div");a.className="a";a.innerText="AI Wolf soch raha hai...";c.appendChild(a);c.scrollTop=c.scrollHeight;
-var sys="You are AI Wolf. Today is November 15, 2026. Answer any question clearly and logically in Hindi, Hinglish, or English.";
-fetch("https://groq.com",{
-method:"POST",
-headers:{"Content-Type":"application/json","Authorization":"Bearer "+K},
-body:JSON.stringify({model:"llama-3.3-70b-versatile",messages:[{role:"system",content:sys},{role:"user",content:t}]})
-})
+var a=document.createElement("div");a.className="a";a.innerText="AI Wolf jawab khoj raha hai...";c.appendChild(a);c.scrollTop=c.scrollHeight;
+var low=t.toLowerCase();
+if(low.indexOf("tapman")!==-1||low.indexOf("weather")!==-1||low.indexOf("mausam")!==-1||low.indexOf("temperature")!==-1||low.indexOf("thandi")!==-1||low.indexOf("garmi")!==-1||low.indexOf("degree")!==-1||low.indexOf("celsius")!==-1){
+var cbw="aww_"+Date.now();
+window[cbw]=function(w){
+if(w&&w.current){a.innerText="AI Wolf Live Weather (Lucknow):\n\nTemperature: "+w.current.temperature_2m+" C\nWind Speed: "+w.current.wind_speed_10m+" km/h";}
+else{a.innerText="AI Wolf: Weather data unavailable.";}
+c.scrollTop=c.scrollHeight;delete window[cbw];
+};
+fetch("https://open-meteo.com")
 .then(function(r){return r.json();})
-.then(function(d){
-if(d&&d.choices&&d.choices.length>0){
-a.innerText="AI Wolf Overview:\n\n"+d.choices.slice(0,1).pop().message.content.replace(/\*\*/g,"");
-c.scrollTop=c.scrollHeight;
-}else{fallback(t,a,c);}
-})
-.catch(function(){fallback(t,a,c);});
+.then(function(w){window[cbw](w);})
+.catch(function(){a.innerText="AI Wolf: Weather service busy.";});
+return;
 }
-function fallback(t,a,c){
-var p="You are AI Wolf (Date: Nov 15, 2026). Reply in Hindi/Hinglish/English clearly: "+t;
-fetch("https://pollinations.ai"+encodeURIComponent(p))
-.then(function(r){return r.text();})
-.then(function(txt){a.innerText="AI Wolf Overview:\n\n"+txt.replace(/\*\*/g,"");c.scrollTop=c.scrollHeight;})
-.catch(function(){a.innerText="AI Wolf: Kripya internet check karein.";});
+var term=cleanQ(t);
+var cb="aw_"+Date.now();
+window[cb]=function(d){
+try{
+var pages=d&&d.query&&d.query.pages?d.query.pages:{};
+var keys=Object.keys(pages);
+var out=[];
+for(var i=0;i<keys.length;i++){
+var p=pages[keys.slice(i,i+1).pop()];
+if(p&&p.extract)out.push(p.title+":\n"+p.extract);
+}
+a.innerText=out.length>0?"AI Wolf Overview:\n\n"+out.join("\n\n"):"AI Wolf: Kripya mukhya vishay ka naam likhein (jaise: India Prime Minister, Lucknow, Cricket).";
+c.scrollTop=c.scrollHeight;
+}catch(e){a.innerText="AI Wolf: Data error.";}
+delete window[cb];
+};
+var s=document.createElement("script");
+s.src="https://wikipedia.org"+encodeURIComponent(term)+"&gsrlimit=2&prop=extracts&exintro=1&explaintext=1&format=json&callback="+cb;
+document.body.appendChild(s);
 }
 </script>
 </body>
